@@ -7,7 +7,7 @@ export const GlassCard = ({
 }: PropsWithChildren<{ className?: string }>) => (
   <div
     className={clsx(
-      'rounded-[28px] border border-slate-200/80 bg-white/88 p-6 shadow-glass ring-1 ring-white/75 backdrop-blur-sm transition duration-200',
+      'rounded-[26px] border border-white/70 bg-white/58 p-6 shadow-glass ring-1 ring-[#efe5d6]/80 backdrop-blur-[18px] transition duration-200',
       className
     )}
   >

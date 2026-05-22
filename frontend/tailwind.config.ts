@@ -5,26 +5,26 @@ export default {
   theme: {
     extend: {
       colors: {
-        bg: '#f5f7fb',
-        surface: '#ffffff',
-        elevated: '#eef3fb',
-        primary: '#1a73e8',
-        secondary: '#5f86f2',
-        success: '#1e8e3e',
-        warning: '#f9ab00',
-        critical: '#d93025',
-        high: '#f29900',
-        text: '#202124',
-        muted: '#5f6368',
-        dim: '#80868b'
+        bg: '#f3efe6',
+        surface: '#fffdf8',
+        elevated: '#f6f1e7',
+        primary: '#1f5f8b',
+        secondary: '#597e9c',
+        success: '#2f6f54',
+        warning: '#b68132',
+        critical: '#a5584a',
+        high: '#c4793a',
+        text: '#1f2933',
+        muted: '#5f6c76',
+        dim: '#8a96a0'
       },
       fontFamily: {
         mono: ['"JetBrains Mono"', 'monospace'],
         sans: ['Inter', 'sans-serif']
       },
       boxShadow: {
-        glass: '0 1px 2px rgba(60,64,67,.08), 0 1px 3px 1px rgba(60,64,67,.16)',
-        critical: '0 8px 24px rgba(217, 48, 37, 0.12)'
+        glass: '0 8px 24px rgba(68, 76, 84, 0.06), 0 1px 0 rgba(255,255,255,0.9) inset',
+        critical: '0 8px 18px rgba(165, 88, 74, 0.08)'
       },
       animation: {
         pulseSoft: 'pulseSoft 2.4s ease-in-out infinite'

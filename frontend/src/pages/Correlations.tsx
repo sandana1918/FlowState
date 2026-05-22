@@ -23,14 +23,13 @@ export const Correlations = () => {
   return (
     <div className="space-y-6">
       <PageHeader
-        eyebrow="Causality"
         title="Correlations"
-        description="This view shows which anomalies line up with recent releases, with the chart and table sharing the same quiet, operator-friendly tone."
+        description="Anomalies matched to recent deployments."
       >
-        <OverviewStat label="Rows" value={correlations.length} hint="Correlation records returned by the backend." />
-        <OverviewStat label="Linked" value={linkedRows} hint="Rows with a deployment candidate attached." tone="primary" />
-        <OverviewStat label="High Confidence" value={highConfidence} hint="Strong deployment-to-anomaly matches." tone={highConfidence > 0 ? 'warning' : 'success'} />
-        <OverviewStat label="Deployments" value={deployments.length} hint="Deployment events available for overlay." />
+        <OverviewStat label="Rows" value={correlations.length} hint="Returned rows." />
+        <OverviewStat label="Linked" value={linkedRows} hint="Rows with a deployment." tone="primary" />
+        <OverviewStat label="High Confidence" value={highConfidence} hint="Strong matches." tone={highConfidence > 0 ? 'warning' : 'success'} />
+        <OverviewStat label="Deployments" value={deployments.length} hint="Overlay events." />
       </PageHeader>
 
       <GlassCard className="space-y-4">
@@ -75,7 +74,7 @@ export const Correlations = () => {
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <div>
             <h3 className="text-[19px] font-semibold tracking-[-0.02em] text-text">Correlation rows</h3>
-            <p className="mt-1 text-sm text-muted">Most recent records first, with deployment metadata kept readable.</p>
+            <p className="mt-1 text-sm text-muted">Most recent first.</p>
           </div>
         </div>
         <div className="overflow-auto">

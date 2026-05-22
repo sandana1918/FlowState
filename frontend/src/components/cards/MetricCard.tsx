@@ -15,19 +15,21 @@ export const MetricCard = ({
   sparkline: number[];
   critical?: boolean;
 }) => (
-  <GlassCard className={critical ? 'border-critical/20 shadow-critical' : ''}>
+  <GlassCard className={critical ? 'border-critical/20' : ''}>
     <div className="mb-4 flex items-start justify-between gap-4">
       <div>
-        <p className="text-sm font-medium text-muted">{title}</p>
-        <h3 className="mt-2 font-mono text-3xl font-semibold tracking-tight text-text">{value}</h3>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-dim">{title}</p>
+        <h3 className="mt-3 font-mono text-[31px] font-semibold tracking-[-0.05em] text-text">{value}</h3>
       </div>
       <div
-        className={`flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ${delta >= 0 ? 'bg-primary/10 text-primary' : 'bg-critical/10 text-critical'}`}
+        className={`flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium ${
+          delta >= 0 ? 'border-primary/12 bg-white/60 text-primary' : 'border-critical/12 bg-white/60 text-critical'
+        }`}
       >
         {delta >= 0 ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
         {Math.abs(delta).toFixed(1)}%
       </div>
     </div>
-    <MetricSparkline values={sparkline} color={critical ? '#F87171' : '#22D3EE'} />
+    <MetricSparkline values={sparkline} color={critical ? '#a5584a' : '#1f5f8b'} />
   </GlassCard>
 );

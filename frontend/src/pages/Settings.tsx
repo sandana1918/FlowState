@@ -46,14 +46,13 @@ export const Settings = () => {
   return (
     <div className="space-y-6">
       <PageHeader
-        eyebrow="Configuration"
         title="Settings"
-        description="Runtime health, webhook visibility, and dependency graph editing live together here in a much cleaner operational settings surface."
+        description="Connections, runtime config, and dependency graph."
       >
         <OverviewStat label="Docker" value={status?.dockerConnected ? 'Connected' : 'Offline'} hint={status?.dockerVersion ? `${status.dockerVersion.version} | API ${status.dockerVersion.apiVersion}` : 'Version unavailable'} tone={status?.dockerConnected ? 'success' : 'critical'} />
-        <OverviewStat label="PostgreSQL" value={status?.dbConnected ? 'Connected' : 'Offline'} hint="Primary metrics and incident store." tone={status?.dbConnected ? 'success' : 'critical'} />
-        <OverviewStat label="Redis" value={status?.redisConnected ? 'Connected' : 'Offline'} hint="Latest metric cache and transient state." tone={status?.redisConnected ? 'success' : 'critical'} />
-        <OverviewStat label="Webhook" value={status?.githubWebhookConfigured ? 'Ready' : 'Missing'} hint="GitHub push hook configuration status." tone={status?.githubWebhookConfigured ? 'primary' : 'warning'} />
+        <OverviewStat label="PostgreSQL" value={status?.dbConnected ? 'Connected' : 'Offline'} hint="Primary store." tone={status?.dbConnected ? 'success' : 'critical'} />
+        <OverviewStat label="Redis" value={status?.redisConnected ? 'Connected' : 'Offline'} hint="Cache." tone={status?.redisConnected ? 'success' : 'critical'} />
+        <OverviewStat label="Webhook" value={status?.githubWebhookConfigured ? 'Ready' : 'Missing'} hint="Push delivery." tone={status?.githubWebhookConfigured ? 'primary' : 'warning'} />
       </PageHeader>
 
       <GlassCard>
@@ -61,7 +60,7 @@ export const Settings = () => {
           <div className="rounded-[22px] border border-slate-200/80 bg-slate-50/80 p-5">
             <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-dim">Docker Engine</p>
             <p className={`mt-3 text-base font-medium ${statusTone(Boolean(status?.dockerConnected))}`}>{status?.dockerConnected ? 'Connected' : 'Disconnected'}</p>
-            <p className="mt-1 text-sm text-muted">{status?.dockerVersion ? `${status.dockerVersion.os}/${status.dockerVersion.arch}` : 'No runtime details'}</p>
+            <p className="mt-1 text-sm text-muted">{status?.dockerVersion ? `${status.dockerVersion.os}/${status.dockerVersion.arch}` : 'No details'}</p>
           </div>
           <div className="rounded-[22px] border border-slate-200/80 bg-slate-50/80 p-5">
             <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-dim">PostgreSQL</p>
@@ -81,7 +80,7 @@ export const Settings = () => {
       <GlassCard className="space-y-5">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-dim">Runtime</p>
-          <h2 className="mt-2 text-[22px] font-semibold tracking-[-0.03em] text-text">Config snapshot</h2>
+          <h2 className="mt-2 text-[22px] font-semibold tracking-[-0.03em] text-text">Runtime configuration</h2>
         </div>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <div className="rounded-[22px] border border-slate-200/80 p-5">
@@ -115,7 +114,7 @@ export const Settings = () => {
           </div>
           <div className="flex items-center gap-4">
             <span className="text-sm text-muted">
-              {saveState === 'saving' ? 'Saving...' : saveState === 'saved' ? 'Saved.' : 'Unsaved edits'}
+              {saveState === 'saving' ? 'Saving...' : saveState === 'saved' ? 'Saved.' : 'Unsaved changes'}
             </span>
             <button onClick={save} className="rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white shadow-sm">
               Save Graph

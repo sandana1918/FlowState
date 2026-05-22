@@ -13,7 +13,7 @@ export const AppLayout = ({ children }: PropsWithChildren) => {
       <Sidebar />
       <Topbar connected={connected} />
       <main className="ml-64 min-h-screen pt-16">
-        <div className="mx-auto max-w-[1440px] space-y-6 px-8 py-7">
+        <div className="mx-auto max-w-[1440px] space-y-6 px-10 py-8">
           <FallbackBanner warning={warning} />
           {children}
         </div>

@@ -51,9 +51,8 @@ export const Metrics = () => {
   return (
     <div className="space-y-6">
       <PageHeader
-        eyebrow="Telemetry"
         title="Metrics"
-        description="Service metrics laid out like a focused operator workbook: one target, clear trends, and anomaly context nearby."
+        description="Historical service metrics and anomalies."
         actions={
           <select
             value={serviceId}
@@ -66,10 +65,10 @@ export const Metrics = () => {
           </select>
         }
       >
-        <OverviewStat label="Service" value={selectedService?.name ?? '--'} hint="Current analysis target." tone="primary" />
-        <OverviewStat label="Max CPU" value={`${maxCpu.toFixed(1)}%`} hint="Peak CPU during the loaded history window." />
-        <OverviewStat label="Max Memory" value={`${maxMemory.toFixed(1)}%`} hint="Peak memory utilization in the history window." />
-        <OverviewStat label="Anomalies" value={anomalies.length} hint="Detected anomalies for this service." tone={anomalies.length > 0 ? 'warning' : 'success'} />
+        <OverviewStat label="Service" value={selectedService?.name ?? '--'} hint="Selected service." tone="primary" />
+        <OverviewStat label="Max CPU" value={`${maxCpu.toFixed(1)}%`} hint="Window peak." />
+        <OverviewStat label="Max Memory" value={`${maxMemory.toFixed(1)}%`} hint="Window peak." />
+        <OverviewStat label="Anomalies" value={anomalies.length} hint="Detected rows." tone={anomalies.length > 0 ? 'warning' : 'success'} />
       </PageHeader>
 
       <div className="grid gap-6 xl:grid-cols-2">
@@ -116,7 +115,7 @@ export const Metrics = () => {
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <div>
             <h3 className="text-[19px] font-semibold tracking-[-0.02em] text-text">Anomaly History</h3>
-            <p className="mt-1 text-sm text-muted">Recent anomaly rows, baseline comparisons, and linked incident ids.</p>
+            <p className="mt-1 text-sm text-muted">Recent anomaly rows.</p>
           </div>
         </div>
         <div className="overflow-auto">

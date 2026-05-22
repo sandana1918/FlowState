@@ -27,20 +27,19 @@ export const Logs = () => {
   return (
     <div className="space-y-6">
       <PageHeader
-        eyebrow="Operator Console"
         title="Logs"
-        description="A stripped-back terminal surface focused on fast scanning, not decoration. Pick a container, tighten the tail, and read the story."
+        description="Live container logs."
       >
-        <OverviewStat label="Services" value={services.length} hint="Containers available for live log review." />
-        <OverviewStat label="Selected" value={selectedService?.name ?? '--'} hint="Current log source." tone="primary" />
-        <OverviewStat label="Tail" value={tail} hint="Lines requested from the backend." />
-        <OverviewStat label="Visible" value={logs.length} hint="Parsed log lines in memory." />
+        <OverviewStat label="Services" value={services.length} hint="Available sources." />
+        <OverviewStat label="Selected" value={selectedService?.name ?? '--'} hint="Current service." tone="primary" />
+        <OverviewStat label="Tail" value={tail} hint="Requested lines." />
+        <OverviewStat label="Visible" value={logs.length} hint="Loaded lines." />
       </PageHeader>
 
       <GlassCard className="space-y-4">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-dim">Source</p>
-          <h2 className="mt-2 text-[22px] font-semibold tracking-[-0.03em] text-text">Log stream controls</h2>
+          <h2 className="mt-2 text-[22px] font-semibold tracking-[-0.03em] text-text">Filters</h2>
         </div>
         <div className="flex flex-wrap gap-4">
           <select

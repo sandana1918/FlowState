@@ -22,14 +22,13 @@ export const Deployments = () => {
   return (
     <div className="space-y-6">
       <PageHeader
-        eyebrow="Release Audit"
         title="Deployments"
-        description="A release stream built for operators: commit context, author identity, and correlation status without noisy chrome."
+        description="Recent GitHub deployments and correlation status."
       >
-        <OverviewStat label="Today" value={deploymentsToday.length} hint="Deployments received today." tone="primary" />
-        <OverviewStat label="Correlated" value={correlatedCount} hint="Deployments linked to anomalies or incidents." tone={correlatedCount > 0 ? 'warning' : 'success'} />
-        <OverviewStat label="Latest" value={liveDeployments[0] ? truncateHash(liveDeployments[0].commitHash, 7) : '--'} hint={liveDeployments[0] ? `Seen ${formatAgo(liveDeployments[0].receivedAt ?? liveDeployments[0].pushedAt)}` : 'No deployment yet.'} />
-        <OverviewStat label="Repos" value={new Set(liveDeployments.map((deployment) => deployment.repo)).size} hint="Distinct repositories in the stream." />
+        <OverviewStat label="Today" value={deploymentsToday.length} hint="Received today." tone="primary" />
+        <OverviewStat label="Correlated" value={correlatedCount} hint="Linked to incidents." tone={correlatedCount > 0 ? 'warning' : 'success'} />
+        <OverviewStat label="Latest" value={liveDeployments[0] ? truncateHash(liveDeployments[0].commitHash, 7) : '--'} hint={liveDeployments[0] ? formatAgo(liveDeployments[0].receivedAt ?? liveDeployments[0].pushedAt) : 'No events yet.'} />
+        <OverviewStat label="Repos" value={new Set(liveDeployments.map((deployment) => deployment.repo)).size} hint="Distinct repos." />
       </PageHeader>
 
       <GlassCard className="space-y-4">
@@ -38,7 +37,7 @@ export const Deployments = () => {
             <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-dim">Volume</p>
             <h2 className="mt-2 text-[22px] font-semibold tracking-[-0.03em] text-text">Deployments by hour</h2>
           </div>
-          <p className="text-sm text-muted">Latest webhook events update live without page reload.</p>
+          <p className="text-sm text-muted">Live updates.</p>
         </div>
         <DeploymentTimeline deployments={liveDeployments} />
       </GlassCard>

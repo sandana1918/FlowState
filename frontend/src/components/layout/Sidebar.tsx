@@ -13,28 +13,24 @@ const items = [
 ];
 
 export const Sidebar = () => (
-  <aside className="fixed left-0 top-0 z-30 h-screen w-64 border-r border-slate-200 bg-surface px-4 py-5">
-    <div className="mb-8 px-3">
-      <div className="mb-3 inline-flex rounded-2xl bg-primary/10 px-3 py-1 text-xs font-semibold tracking-[0.22em] text-primary">
-        FLOWSTATE
-      </div>
-      <h1 className="text-[22px] font-semibold tracking-tight text-text">Operations</h1>
-      <p className="mt-1 text-sm text-muted">Incident correlation engine</p>
+  <aside className="fixed left-0 top-0 z-30 h-screen w-64 border-r border-white/70 bg-white/42 px-5 py-6 backdrop-blur-[18px]">
+    <div className="mb-10 px-3">
+      <h1 className="text-[23px] font-semibold tracking-[-0.04em] text-text">FlowState</h1>
     </div>
-    <nav className="space-y-1">
+    <nav className="space-y-1.5">
       {items.map((item) => (
         <NavLink
           key={item.to}
           to={item.to}
           className={({ isActive }) =>
-            `flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition ${
+            `flex items-center gap-3 rounded-[18px] px-4 py-3 text-sm font-medium transition ${
               isActive
-                ? 'bg-primary text-white shadow-sm'
-                : 'text-muted hover:bg-slate-100 hover:text-text'
+                ? 'border border-white/80 bg-white/72 text-text shadow-glass'
+                : 'text-muted hover:bg-white/55 hover:text-text'
             }`
           }
         >
-          <item.icon size={18} />
+          <item.icon size={17} />
           {item.label}
         </NavLink>
       ))}

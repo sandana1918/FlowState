@@ -11,7 +11,7 @@ export const IncidentFeed = ({
   onSelect?: (incident: Incident) => void;
 }) =>
   incidents.length === 0 ? (
-    <EmptyState title="All systems operational" description="No active incidents are currently open." />
+    <EmptyState title="No open incidents" description="No incidents require attention." />
   ) : (
     <div className="space-y-4">
       {incidents.map((incident) => (
@@ -26,4 +26,3 @@ export const IncidentFeed = ({
       ))}
     </div>
   );
-

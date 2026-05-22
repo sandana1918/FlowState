@@ -9,7 +9,7 @@ export const PageHeader = ({
   className,
   children
 }: PropsWithChildren<{
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
   description: string;
   actions?: ReactNode;
@@ -18,7 +18,7 @@ export const PageHeader = ({
   <section className={clsx('space-y-5', className)}>
     <div className="flex flex-wrap items-end justify-between gap-5">
       <div className="max-w-3xl space-y-2">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-dim">{eyebrow}</p>
+        {eyebrow ? <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-dim">{eyebrow}</p> : null}
         <h1 className="text-[34px] font-semibold tracking-[-0.04em] text-text">{title}</h1>
         <p className="max-w-2xl text-[15px] leading-7 text-muted">{description}</p>
       </div>

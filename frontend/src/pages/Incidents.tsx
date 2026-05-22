@@ -43,21 +43,20 @@ export const Incidents = () => {
   return (
     <div className="space-y-6">
       <PageHeader
-        eyebrow="Response Desk"
         title="Incidents"
-        description="Triage, investigate, and close live incidents with clean correlation context instead of noisy alert spam."
+        description="Active incidents and investigation status."
       >
-        <OverviewStat label="Open" value={liveIncidents.filter((item) => item.status === 'open').length} hint="Currently active incidents." tone={criticalCount > 0 ? 'critical' : 'default'} />
-        <OverviewStat label="Resolved Today" value={resolvedToday} hint="Closed during the current day." tone="success" />
-        <OverviewStat label="Critical" value={criticalCount} hint="Need immediate operator attention." tone={criticalCount > 0 ? 'critical' : 'default'} />
-        <OverviewStat label="Visible Rows" value={filteredIncidents.length} hint="Filtered incident list count." tone="primary" />
+        <OverviewStat label="Open" value={liveIncidents.filter((item) => item.status === 'open').length} hint="Active now." tone={criticalCount > 0 ? 'critical' : 'default'} />
+        <OverviewStat label="Resolved Today" value={resolvedToday} hint="Closed today." tone="success" />
+        <OverviewStat label="Critical" value={criticalCount} hint="Needs attention." tone={criticalCount > 0 ? 'critical' : 'default'} />
+        <OverviewStat label="Visible Rows" value={filteredIncidents.length} hint="Current results." tone="primary" />
       </PageHeader>
 
       <GlassCard className="space-y-5">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-dim">Filters</p>
-            <p className="mt-1 text-sm text-muted">Status, severity, and search stay in one compact control rail.</p>
+            <p className="mt-1 text-sm text-muted">Status, severity, and search.</p>
           </div>
           <input
             value={query}

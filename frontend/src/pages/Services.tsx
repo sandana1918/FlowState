@@ -20,14 +20,13 @@ export const Services = () => {
   return (
     <div className="space-y-6">
       <PageHeader
-        eyebrow="Runtime Fleet"
         title="Services"
-        description="A cleaner service inventory with live health, current pressure, and direct drill-down paths into logs and metrics."
+        description="Running containers and current health."
       >
-        <OverviewStat label="Containers" value={mergedServices.length} hint="Docker services currently visible." tone="primary" />
-        <OverviewStat label="Avg CPU" value={`${(mergedServices.length ? totalCpu / mergedServices.length : 0).toFixed(1)}%`} hint="Live CPU across the fleet." />
-        <OverviewStat label="Avg Memory" value={`${(mergedServices.length ? totalMemory / mergedServices.length : 0).toFixed(1)}%`} hint="Live memory utilization across services." />
-        <OverviewStat label="Restarting" value={restarting} hint="Services with recent restart activity." tone={restarting > 0 ? 'warning' : 'success'} />
+        <OverviewStat label="Containers" value={mergedServices.length} hint="Running services." tone="primary" />
+        <OverviewStat label="Avg CPU" value={`${(mergedServices.length ? totalCpu / mergedServices.length : 0).toFixed(1)}%`} hint="Fleet average." />
+        <OverviewStat label="Avg Memory" value={`${(mergedServices.length ? totalMemory / mergedServices.length : 0).toFixed(1)}%`} hint="Fleet average." />
+        <OverviewStat label="Restarting" value={restarting} hint="Recent restarts." tone={restarting > 0 ? 'warning' : 'success'} />
       </PageHeader>
       <ServiceGrid services={mergedServices} />
     </div>
