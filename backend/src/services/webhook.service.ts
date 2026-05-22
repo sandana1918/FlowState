@@ -8,6 +8,29 @@ import {
   webhookSignatureFailuresTotal
 } from '../monitoring/prometheus.js';
 
+interface GithubPushPayload {
+  ref?: string;
+  repository?: {
+    full_name?: string;
+    name?: string;
+  };
+  head_commit?: {
+    id?: string;
+    message?: string;
+    timestamp?: string;
+    author?: {
+      name?: string;
+      email?: string;
+    };
+  };
+  pusher?: {
+    name?: string;
+  };
+  sender?: {
+    avatar_url?: string;
+  };
+}
+
 export class WebhookService {
   verifySignature(signature: string | undefined, rawBody: Buffer) {
     if (!signature) {
@@ -26,7 +49,21 @@ export class WebhookService {
     }
   }
 
-  async storePushEvent(payload: Record<string, any>) {
+  isPushPayload(payload: unknown): payload is GithubPushPayload {
+    if (!payload || typeof payload !== 'object') {
+      return false;
+    }
+
+    const candidate = payload as GithubPushPayload;
+    return (
+      typeof candidate.ref === 'string' &&
+      candidate.ref.startsWith('refs/heads/') &&
+      typeof candidate.head_commit?.id === 'string' &&
+      candidate.head_commit.id.length > 0
+    );
+  }
+
+  async storePushEvent(payload: GithubPushPayload) {
     const deployment: DeploymentRecord = {
       repo: payload.repository?.full_name ?? payload.repository?.name ?? 'unknown',
       branch: String(payload.ref ?? '').replace('refs/heads/', ''),
