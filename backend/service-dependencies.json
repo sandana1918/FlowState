@@ -1,0 +1,9 @@
+{
+  "frontend": ["backend-api", "auth-service"],
+  "backend-api": ["postgres", "redis", "notification-worker"],
+  "auth-service": ["postgres", "redis"],
+  "notification-worker": ["redis"],
+  "postgres": [],
+  "redis": []
+}
+

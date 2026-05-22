@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flowstate-postgres
+  namespace: flowstate
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flowstate-postgres
+  template:
+    metadata:
+      labels:
+        app: flowstate-postgres
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          env:
+            - name: POSTGRES_DB
+              value: flowstate
+            - name: POSTGRES_USER
+              value: flowstate
+            - name: POSTGRES_PASSWORD
+              value: flowstate
+          ports:
+            - containerPort: 5432
+          readinessProbe:
+            tcpSocket:
+              port: 5432
+            initialDelaySeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 5432
+            initialDelaySeconds: 20
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+

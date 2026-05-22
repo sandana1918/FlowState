@@ -1,0 +1,16 @@
+{
+  "title": "FlowState",
+  "schemaVersion": 39,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "CPU %",
+      "targets": [
+        {
+          "expr": "process_cpu_user_seconds_total"
+        }
+      ]
+    }
+  ]
+}
+

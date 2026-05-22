@@ -1,0 +1,6 @@
+frontend:
+  image: flowstate-frontend:latest
+backend:
+  image: flowstate-backend:latest
+replicaCount: 2
+

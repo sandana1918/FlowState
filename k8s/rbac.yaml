@@ -1,0 +1,23 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: flowstate-backend
+  namespace: flowstate
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: flowstate-backend
+  namespace: flowstate
+subjects:
+  - kind: ServiceAccount
+    name: flowstate-backend
+roleRef:
+  kind: Role
+  name: flowstate-backend
+  apiGroup: rbac.authorization.k8s.io
+

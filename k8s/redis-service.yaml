@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: flowstate-redis
+  namespace: flowstate
+spec:
+  selector:
+    app: flowstate-redis
+  ports:
+    - port: 6379
+      targetPort: 6379
+

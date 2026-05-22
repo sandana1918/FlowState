@@ -1,0 +1,58 @@
+services:
+  postgres:
+    image: postgres:16
+    platform: linux/amd64
+    environment:
+      POSTGRES_DB: flowstate
+      POSTGRES_USER: flowstate
+      POSTGRES_PASSWORD: flowstate
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U flowstate -d flowstate"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    platform: linux/amd64
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  flowstate-backend:
+    build:
+      context: ../backend
+    platform: linux/amd64
+    env_file:
+      - ../backend/.env.example
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - type: npipe
+        source: \\.\pipe\docker_engine
+        target: //./pipe/docker_engine
+
+  flowstate-frontend:
+    build:
+      context: ../frontend
+    platform: linux/amd64
+    ports:
+      - "3000:80"
+    depends_on:
+      - flowstate-backend
+
+volumes:
+  postgres-data:
