@@ -3,9 +3,11 @@ import { useServices } from '../hooks/useServices';
 import { useSocketStore } from '../store/socketStore';
 import { PageHeader } from '../components/common/PageHeader';
 import { OverviewStat } from '../components/common/OverviewStat';
+import { FallbackBanner } from '../components/common/FallbackBanner';
+import { EmptyState } from '../components/common/EmptyState';
 
 export const Services = () => {
-  const { services } = useServices();
+  const { services, warning } = useServices();
   const metrics = useSocketStore((state) => state.metrics);
   const metricMap = new Map(metrics.map((metric) => [metric.containerId, metric]));
   const mergedServices = services.map((service) => ({
@@ -28,7 +30,12 @@ export const Services = () => {
         <OverviewStat label="Avg Memory" value={`${(mergedServices.length ? totalMemory / mergedServices.length : 0).toFixed(1)}%`} hint="Fleet average." />
         <OverviewStat label="Restarting" value={restarting} hint="Recent restarts." tone={restarting > 0 ? 'warning' : 'success'} />
       </PageHeader>
-      <ServiceGrid services={mergedServices} />
+      <FallbackBanner warning={warning} />
+      {mergedServices.length > 0 ? (
+        <ServiceGrid services={mergedServices} />
+      ) : (
+        <EmptyState title="No services available" description="No containers or recent metrics are available yet." />
+      )}
     </div>
   );
 };

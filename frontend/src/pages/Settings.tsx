@@ -3,7 +3,6 @@ import { GlassCard } from '../components/cards/GlassCard';
 import { deploymentsApi } from '../services/deployments.api';
 import { DependencyGraph } from '../components/services/DependencyGraph';
 import { PageHeader } from '../components/common/PageHeader';
-import { OverviewStat } from '../components/common/OverviewStat';
 
 interface SettingsStatus {
   dockerConnected: boolean;
@@ -48,12 +47,7 @@ export const Settings = () => {
       <PageHeader
         title="Settings"
         description="Connections, runtime config, and dependency graph."
-      >
-        <OverviewStat label="Docker" value={status?.dockerConnected ? 'Connected' : 'Offline'} hint={status?.dockerVersion ? `${status.dockerVersion.version} | API ${status.dockerVersion.apiVersion}` : 'Version unavailable'} tone={status?.dockerConnected ? 'success' : 'critical'} />
-        <OverviewStat label="PostgreSQL" value={status?.dbConnected ? 'Connected' : 'Offline'} hint="Primary store." tone={status?.dbConnected ? 'success' : 'critical'} />
-        <OverviewStat label="Redis" value={status?.redisConnected ? 'Connected' : 'Offline'} hint="Cache." tone={status?.redisConnected ? 'success' : 'critical'} />
-        <OverviewStat label="Webhook" value={status?.githubWebhookConfigured ? 'Ready' : 'Missing'} hint="Push delivery." tone={status?.githubWebhookConfigured ? 'primary' : 'warning'} />
-      </PageHeader>
+      />
 
       <GlassCard>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">

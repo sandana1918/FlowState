@@ -7,8 +7,10 @@ export const useLogs = (containerId?: string, tail = 100) => {
     if (!containerId) {
       return;
     }
-    void logsApi.list(containerId, tail).then((result) => setLogs(result.data));
+    void logsApi
+      .list(containerId, tail)
+      .then((result) => setLogs(result.data))
+      .catch(() => setLogs([]));
   }, [containerId, tail]);
   return { logs };
 };
-

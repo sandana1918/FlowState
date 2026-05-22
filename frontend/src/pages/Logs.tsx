@@ -6,9 +6,11 @@ import { GlassCard } from '../components/cards/GlassCard';
 import { useSearchParams } from 'react-router-dom';
 import { PageHeader } from '../components/common/PageHeader';
 import { OverviewStat } from '../components/common/OverviewStat';
+import { EmptyState } from '../components/common/EmptyState';
+import { FallbackBanner } from '../components/common/FallbackBanner';
 
 export const Logs = () => {
-  const { services } = useServices();
+  const { services, warning } = useServices();
   const [params] = useSearchParams();
   const presetService = params.get('service') ?? undefined;
   const [containerId, setContainerId] = useState<string | undefined>(presetService);
@@ -36,6 +38,8 @@ export const Logs = () => {
         <OverviewStat label="Visible" value={logs.length} hint="Loaded lines." />
       </PageHeader>
 
+      <FallbackBanner warning={warning} />
+
       <GlassCard className="space-y-4">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-dim">Source</p>
@@ -46,6 +50,7 @@ export const Logs = () => {
             value={targetId}
             onChange={(event) => setContainerId(event.target.value)}
             className="rounded-full border border-slate-200 bg-white px-4 py-3 text-text outline-none"
+            disabled={services.length === 0}
           >
             {services.map((service) => (
               <option key={service.id} value={service.id}>{service.name}</option>
@@ -62,7 +67,11 @@ export const Logs = () => {
           </select>
         </div>
       </GlassCard>
-      <LogViewer logs={logs} />
+      {services.length > 0 ? (
+        <LogViewer logs={logs} />
+      ) : (
+        <EmptyState title="Logs unavailable" description="Select a container once service data is available." />
+      )}
     </div>
   );
 };

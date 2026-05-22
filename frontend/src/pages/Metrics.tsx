@@ -17,9 +17,11 @@ import {
 } from 'recharts';
 import { PageHeader } from '../components/common/PageHeader';
 import { OverviewStat } from '../components/common/OverviewStat';
+import { EmptyState } from '../components/common/EmptyState';
+import { FallbackBanner } from '../components/common/FallbackBanner';
 
 export const Metrics = () => {
-  const { services } = useServices();
+  const { services, warning } = useServices();
   const [params] = useSearchParams();
   const [serviceId, setServiceId] = useState<string>();
   const presetService = params.get('service') ?? undefined;
@@ -70,6 +72,13 @@ export const Metrics = () => {
         <OverviewStat label="Max Memory" value={`${maxMemory.toFixed(1)}%`} hint="Window peak." />
         <OverviewStat label="Anomalies" value={anomalies.length} hint="Detected rows." tone={anomalies.length > 0 ? 'warning' : 'success'} />
       </PageHeader>
+
+      <FallbackBanner warning={warning} />
+
+      {services.length === 0 ? (
+        <EmptyState title="Metrics unavailable" description="No service sources are available yet." />
+      ) : (
+        <>
 
       <div className="grid gap-6 xl:grid-cols-2">
         <GlassCard>
@@ -152,6 +161,8 @@ export const Metrics = () => {
           </table>
         </div>
       </GlassCard>
+        </>
+      )}
     </div>
   );
 };

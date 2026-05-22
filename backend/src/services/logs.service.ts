@@ -14,7 +14,7 @@ const detectLevel = (line: string): ParsedLogLine['level'] => {
 
 export class LogsService {
   async getLogs(containerId: string, tail = 100) {
-    const lines = await dockerService.getContainerLogs(containerId, tail);
+    const lines = await dockerService.getContainerLogs(containerId, tail).catch(() => []);
     return lines.map((raw) => {
       const match = raw.match(/^(\d{4}-\d{2}-\d{2}T[^ ]+)\s+(.*)$/);
       return {
@@ -28,4 +28,3 @@ export class LogsService {
 }
 
 export const logsService = new LogsService();
-

@@ -49,6 +49,21 @@ const docker = new Docker({
 });
 
 const mb = (value: number) => Number((value / 1024 / 1024).toFixed(2));
+const withTimeout = async <T>(promise: Promise<T>, ms: number, label: string): Promise<T> => {
+  let timer: NodeJS.Timeout | undefined;
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<T>((_, reject) => {
+        timer = setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms);
+      })
+    ]);
+  } finally {
+    if (timer) {
+      clearTimeout(timer);
+    }
+  }
+};
 
 const createFallbackContainers = (): ContainerSummary[] => [
   {
@@ -87,7 +102,7 @@ const parseContainer = (container: ContainerInfo): ContainerSummary => {
 export class DockerService {
   async getVersion() {
     try {
-      const version = await docker.version();
+      const version = await withTimeout(docker.version(), 2000, 'docker.version');
       return {
         version: String(version.Version ?? 'unknown'),
         apiVersion: String(version.ApiVersion ?? 'unknown'),
@@ -101,7 +116,7 @@ export class DockerService {
 
   async isAvailable() {
     try {
-      await docker.ping();
+      await withTimeout(docker.ping(), 1500, 'docker.ping');
       return true;
     } catch {
       return false;
@@ -110,7 +125,7 @@ export class DockerService {
 
   async listContainers(): Promise<ServiceResult<ContainerSummary[]>> {
     try {
-      const containers = await docker.listContainers({ all: true });
+      const containers = await withTimeout(docker.listContainers({ all: true }), 3000, 'docker.listContainers');
       if (containers.length === 0) {
         return {
           mode: 'fallback',
@@ -133,7 +148,7 @@ export class DockerService {
   }
 
   async inspectContainer(containerId: string): Promise<ContainerInspect> {
-    const inspect = await docker.getContainer(containerId).inspect();
+    const inspect = await withTimeout(docker.getContainer(containerId).inspect(), 3000, 'docker.inspect');
     return {
       id: inspect.Id,
       name: inspect.Name.replace(/^\//, ''),
@@ -150,8 +165,8 @@ export class DockerService {
   async getContainerStats(containerId: string): Promise<ContainerStats> {
     const container = docker.getContainer(containerId);
     const [rawStats, inspect] = await Promise.all([
-      container.stats({ stream: false }),
-      container.inspect()
+      withTimeout(container.stats({ stream: false }) as Promise<unknown>, 3000, 'docker.stats'),
+      withTimeout(container.inspect(), 3000, 'docker.inspect')
     ]);
     const stats = rawStats as DockerStatsPayload;
     const cpuDelta =
@@ -198,12 +213,16 @@ export class DockerService {
   }
 
   async getContainerLogs(containerId: string, tail: number): Promise<string[]> {
-    const logs = await docker.getContainer(containerId).logs({
-      stdout: true,
-      stderr: true,
-      timestamps: true,
-      tail
-    });
+    const logs = await withTimeout(
+      docker.getContainer(containerId).logs({
+        stdout: true,
+        stderr: true,
+        timestamps: true,
+        tail
+      }),
+      3000,
+      'docker.logs'
+    );
     return logs
       .toString('utf8')
       .split('\n')
