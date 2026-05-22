@@ -21,5 +21,5 @@ export interface Anomaly {
   meanBaseline: number;
   stddevBaseline: number;
   detectedAt: string;
+  linkedIncidentId?: string;
 }
-

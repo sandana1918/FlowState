@@ -25,7 +25,7 @@ const confidenceFromDelta = (deltaMinutes: number): CorrelationConfidence => {
 export class CorrelationService {
   async correlate(anomaly: AnomalyRecord): Promise<CorrelationResult> {
     const result = await pool.query(
-      `SELECT id, repo, branch, commit_hash, commit_message, author, author_email, pushed_at, received_at
+      `SELECT id, repo, branch, commit_hash, commit_message, author, author_email, avatar_url, pushed_at, received_at
        FROM deployments
        WHERE received_at >= NOW() - ($1::text || ' minutes')::interval
        ORDER BY received_at DESC
@@ -53,6 +53,7 @@ export class CorrelationService {
         commitMessage: row.commit_message ?? '',
         author: row.author ?? 'unknown',
         authorEmail: row.author_email ?? '',
+        avatarUrl: row.avatar_url ?? undefined,
         pushedAt: new Date(row.pushed_at).toISOString(),
         receivedAt: new Date(row.received_at).toISOString()
       },
@@ -70,8 +71,11 @@ export class CorrelationService {
               i.correlation_confidence,
               i.opened_at,
               d.id AS deployment_id,
+              d.repo,
+              d.branch,
               d.commit_hash,
               d.author,
+              d.received_at,
               CASE WHEN d.received_at IS NULL THEN NULL
                    ELSE EXTRACT(EPOCH FROM (i.opened_at - d.received_at)) / 60 END AS delta_minutes
        FROM incidents i
@@ -84,9 +88,13 @@ export class CorrelationService {
       anomalyContainerName: row.affected_service,
       anomalyMetric: row.trigger_metric ?? 'unknown',
       zscore: Number(row.trigger_zscore ?? 0),
+      incidentOpenedAt: row.opened_at ? new Date(row.opened_at).toISOString() : undefined,
       deploymentId: row.deployment_id ?? undefined,
+      deploymentRepo: row.repo ?? undefined,
+      deploymentBranch: row.branch ?? undefined,
       deploymentCommit: row.commit_hash ?? undefined,
       deploymentAuthor: row.author ?? undefined,
+      deploymentReceivedAt: row.received_at ? new Date(row.received_at).toISOString() : undefined,
       confidence: row.correlation_confidence ?? 'NONE',
       timeDeltaMinutes:
         row.delta_minutes === null || row.delta_minutes === undefined
@@ -97,4 +105,3 @@ export class CorrelationService {
 }
 
 export const correlationService = new CorrelationService();
-

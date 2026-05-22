@@ -5,6 +5,7 @@ import type { MetricRecord, AnomalyRecord } from '../types/metric.types.js';
 import { correlationService } from './correlation.service.js';
 import { incidentService } from './incident.service.js';
 import { socketHandler } from '../socket/socketHandler.js';
+import { anomaliesDetectedTotal } from '../monitoring/prometheus.js';
 
 type MetricName = 'cpu_percent' | 'memory_percent';
 
@@ -80,6 +81,10 @@ export class AnomalyService {
       detectedAt: new Date(result.rows[0].detected_at).toISOString()
     };
     socketHandler.emitAnomalyDetected(saved);
+    anomaliesDetectedTotal.inc({
+      container_name: saved.containerName,
+      metric_name: saved.metricName
+    });
 
     const correlation = await correlationService.correlate(saved);
     if (correlation.confidence !== 'NONE') {
@@ -89,4 +94,3 @@ export class AnomalyService {
 }
 
 export const anomalyService = new AnomalyService();
-

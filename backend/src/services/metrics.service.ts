@@ -58,13 +58,36 @@ export class MetricsService {
     return this.getMetricHistory(containerId, 60);
   }
 
+  async getDashboardHistory(minutes: number) {
+    const result = await pool.query(
+      `SELECT id, container_id, container_name, cpu_percent, memory_mb, memory_percent,
+              network_rx_bytes, network_tx_bytes, restart_count, collected_at
+       FROM metrics
+       WHERE collected_at >= NOW() - ($1::text || ' minutes')::interval
+       ORDER BY collected_at ASC`,
+      [minutes]
+    );
+    return result.rows.map(this.mapMetricRow);
+  }
+
   async getAnomaliesForContainer(containerId: string) {
     const result = await pool.query(
-      `SELECT id, container_id, container_name, metric_name, metric_value, zscore,
-              mean_baseline, stddev_baseline, detected_at
-       FROM anomalies
-       WHERE container_id = $1
-       ORDER BY detected_at DESC
+      `SELECT a.id, a.container_id, a.container_name, a.metric_name, a.metric_value, a.zscore,
+              a.mean_baseline, a.stddev_baseline, a.detected_at,
+              i.id AS linked_incident_id
+       FROM anomalies a
+       LEFT JOIN LATERAL (
+         SELECT id
+         FROM incidents
+         WHERE affected_container_id = a.container_id
+           AND trigger_metric = a.metric_name
+           AND opened_at >= a.detected_at - INTERVAL '5 minutes'
+           AND opened_at <= a.detected_at + INTERVAL '30 minutes'
+         ORDER BY ABS(EXTRACT(EPOCH FROM (opened_at - a.detected_at))) ASC
+         LIMIT 1
+       ) i ON TRUE
+       WHERE a.container_id = $1
+       ORDER BY a.detected_at DESC
        LIMIT 100`,
       [containerId]
     );
@@ -77,7 +100,8 @@ export class MetricsService {
       zscore: Number(row.zscore),
       meanBaseline: Number(row.mean_baseline),
       stddevBaseline: Number(row.stddev_baseline),
-      detectedAt: new Date(row.detected_at).toISOString()
+      detectedAt: new Date(row.detected_at).toISOString(),
+      linkedIncidentId: row.linked_incident_id ?? undefined
     }));
   }
 
@@ -98,4 +122,3 @@ export class MetricsService {
 }
 
 export const metricsService = new MetricsService();
-

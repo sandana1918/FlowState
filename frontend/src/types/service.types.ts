@@ -10,4 +10,3 @@ export interface Service {
   createdAt: string;
   latestMetric?: ContainerMetric | null;
 }
-

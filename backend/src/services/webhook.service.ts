@@ -3,6 +3,10 @@ import { pool } from '../db/client.js';
 import { env } from '../config/env.js';
 import { socketHandler } from '../socket/socketHandler.js';
 import type { DeploymentRecord } from '../types/incident.types.js';
+import {
+  deploymentsReceivedTotal,
+  webhookSignatureFailuresTotal
+} from '../monitoring/prometheus.js';
 
 export class WebhookService {
   verifySignature(signature: string | undefined, rawBody: Buffer) {
@@ -17,6 +21,7 @@ export class WebhookService {
     try {
       return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(digest));
     } catch {
+      webhookSignatureFailuresTotal.inc();
       return false;
     }
   }
@@ -34,8 +39,8 @@ export class WebhookService {
     };
 
     const result = await pool.query(
-      `INSERT INTO deployments (repo, branch, commit_hash, commit_message, author, author_email, pushed_at)
-       VALUES ($1,$2,$3,$4,$5,$6,$7)
+      `INSERT INTO deployments (repo, branch, commit_hash, commit_message, author, author_email, avatar_url, pushed_at)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
        RETURNING *`,
       [
         deployment.repo,
@@ -44,6 +49,7 @@ export class WebhookService {
         deployment.commitMessage,
         deployment.author,
         deployment.authorEmail,
+        deployment.avatarUrl ?? null,
         deployment.pushedAt
       ]
     );
@@ -54,10 +60,13 @@ export class WebhookService {
       id: row.id,
       receivedAt: new Date(row.received_at).toISOString()
     };
+    deploymentsReceivedTotal.inc({
+      repo: saved.repo,
+      branch: saved.branch
+    });
     socketHandler.emitDeploymentReceived(saved);
     return saved;
   }
 }
 
 export const webhookService = new WebhookService();
-

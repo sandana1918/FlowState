@@ -54,10 +54,13 @@ export interface CorrelationRecord {
   anomalyContainerName: string;
   anomalyMetric: string;
   zscore: number;
+  incidentOpenedAt?: string;
   deploymentId?: string;
+  deploymentRepo?: string;
+  deploymentBranch?: string;
   deploymentCommit?: string;
   deploymentAuthor?: string;
+  deploymentReceivedAt?: string;
   confidence: CorrelationConfidence;
   timeDeltaMinutes?: number;
 }
-

@@ -8,4 +8,4 @@ frontend/dist
 backend/dist
 postgres-data
 redis-data
-
+.tunnel

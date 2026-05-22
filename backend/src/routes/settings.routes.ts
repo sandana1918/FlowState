@@ -9,7 +9,10 @@ import { redis } from '../cache/redis.js';
 export const settingsRouter = Router();
 
 settingsRouter.get('/status', async (_request, response) => {
-  const dockerConnected = await dockerService.isAvailable();
+  const [dockerConnected, dockerVersion] = await Promise.all([
+    dockerService.isAvailable(),
+    dockerService.getVersion()
+  ]);
   const dbConnected = await checkDbConnection().catch(() => false);
   response.json({
     mode: dockerConnected ? 'real' : 'fallback',
@@ -19,6 +22,7 @@ settingsRouter.get('/status', async (_request, response) => {
       dbConnected,
       redisConnected: redis.status === 'ready',
       githubWebhookConfigured: env.GITHUB_WEBHOOK_SECRET !== 'your_webhook_secret_here',
+      dockerVersion,
       webhookUrl: 'https://your-domain.com/api/webhooks/github',
       config: {
         anomalyZScoreThreshold: env.ANOMALY_ZSCORE_THRESHOLD,
@@ -48,4 +52,3 @@ settingsRouter.put('/service-graph', async (request, response) => {
     timestamp: new Date().toISOString()
   });
 });
-

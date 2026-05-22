@@ -1,18 +1,21 @@
 import { motion } from 'framer-motion';
-import { MetricCard } from '../components/cards/MetricCard';
-import { GlassCard } from '../components/cards/GlassCard';
-import { IncidentFeed } from '../components/incidents/IncidentFeed';
-import { DeploymentFeed } from '../components/deployments/DeploymentFeed';
-import { useSocketStore } from '../store/socketStore';
-import { useIncidents } from '../hooks/useIncidents';
-import { useDeployments } from '../hooks/useDeployments';
-import { useServices } from '../hooks/useServices';
+import { useEffect, useMemo, useState } from 'react';
 import { Area, AreaChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { useMemo, useState } from 'react';
-import { IncidentDetail } from '../components/incidents/IncidentDetail';
-import type { Incident } from '../types/incident.types';
-import { formatAgo, truncateHash } from '../utils/formatters';
+import { GlassCard } from '../components/cards/GlassCard';
+import { MetricCard } from '../components/cards/MetricCard';
 import { StatusBadge } from '../components/common/StatusBadge';
+import { IncidentDetail } from '../components/incidents/IncidentDetail';
+import { IncidentFeed } from '../components/incidents/IncidentFeed';
+import { useDeployments } from '../hooks/useDeployments';
+import { useIncidents } from '../hooks/useIncidents';
+import { useServices } from '../hooks/useServices';
+import { metricsApi } from '../services/metrics.api';
+import { useSocketStore } from '../store/socketStore';
+import type { Incident } from '../types/incident.types';
+import type { ContainerMetric } from '../types/metric.types';
+import { formatAgo, truncateHash } from '../utils/formatters';
+
+const seriesColors = ['#1a73e8', '#5f86f2', '#1e8e3e', '#f29900', '#d93025', '#7b61ff'];
 
 export const Dashboard = () => {
   const socketMetrics = useSocketStore((state) => state.metrics);
@@ -22,10 +25,15 @@ export const Dashboard = () => {
   const { deployments } = useDeployments();
   const { services } = useServices();
   const [selectedIncident, setSelectedIncident] = useState<Incident>();
+  const [historicalMetrics, setHistoricalMetrics] = useState<ContainerMetric[]>([]);
 
   const liveIncidents = socketIncidents.length > 0 ? socketIncidents : incidents;
   const liveDeployments = socketDeployments.length > 0 ? socketDeployments : deployments;
   const liveMetrics = socketMetrics;
+
+  useEffect(() => {
+    void metricsApi.overview(30).then((result) => setHistoricalMetrics(result.data));
+  }, [socketMetrics.length]);
 
   const metricCards = useMemo(() => {
     const avgCpu = liveMetrics.length
@@ -46,13 +54,38 @@ export const Dashboard = () => {
     ];
   }, [liveDeployments.length, liveIncidents, liveMetrics, services.length]);
 
-  const chartData = liveMetrics.map((metric) => ({
-    name: metric.containerName,
-    cpu: metric.cpuPercent,
-    memory: metric.memoryPercent
-  }));
+  const groupedHistory = useMemo(() => {
+    const containerNames = [...new Set(historicalMetrics.map((metric) => metric.containerName))];
+    const byTimestamp = new Map<string, Record<string, number | string>>();
+
+    for (const metric of historicalMetrics) {
+      const key = metric.collectedAt;
+      const existing = byTimestamp.get(key) ?? {
+        time: new Date(metric.collectedAt).toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit'
+        })
+      };
+      existing[metric.containerName] = metric.cpuPercent;
+      byTimestamp.set(key, existing);
+    }
+
+    return {
+      containerNames,
+      chartData: [...byTimestamp.entries()].map(([timestamp, values]) => ({
+        timestamp,
+        ...values
+      }))
+    };
+  }, [historicalMetrics]);
+
+  const liveMetricMap = new Map(liveMetrics.map((metric) => [metric.containerId, metric]));
 
   const topServices = [...services]
+    .map((service) => ({
+      ...service,
+      latestMetric: liveMetricMap.get(service.id) ?? service.latestMetric
+    }))
     .sort((left, right) => (right.latestMetric?.cpuPercent ?? 0) - (left.latestMetric?.cpuPercent ?? 0))
     .slice(0, 5);
 
@@ -143,13 +176,13 @@ export const Dashboard = () => {
         <GlassCard className="p-6">
           <div className="mb-5">
             <h2 className="text-xl font-semibold text-text">System metrics</h2>
-            <p className="mt-1 text-sm text-muted">CPU and memory across live containers.</p>
+            <p className="mt-1 text-sm text-muted">Thirty minutes of real CPU history across live containers.</p>
           </div>
           <div className="h-96">
             <ResponsiveContainer>
-              <AreaChart data={chartData}>
+              <AreaChart data={groupedHistory.chartData}>
                 <CartesianGrid stroke="#e5e7eb" vertical={false} />
-                <XAxis dataKey="name" stroke="#80868b" />
+                <XAxis dataKey="time" stroke="#80868b" />
                 <YAxis stroke="#80868b" />
                 <Tooltip
                   contentStyle={{
@@ -159,8 +192,17 @@ export const Dashboard = () => {
                   }}
                 />
                 <Legend />
-                <Area type="monotone" dataKey="cpu" stroke="#1a73e8" fill="rgba(26,115,232,.12)" />
-                <Area type="monotone" dataKey="memory" stroke="#5f86f2" fill="rgba(95,134,242,.12)" />
+                {groupedHistory.containerNames.map((containerName, index) => (
+                  <Area
+                    key={containerName}
+                    type="monotone"
+                    dataKey={containerName}
+                    stroke={seriesColors[index % seriesColors.length]}
+                    fill={seriesColors[index % seriesColors.length]}
+                    fillOpacity={0.08}
+                    strokeWidth={2}
+                  />
+                ))}
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -177,7 +219,7 @@ export const Dashboard = () => {
                 <div>
                   <p className="font-medium text-text">{service.name}</p>
                   <p className="mt-1 text-sm text-muted">
-                    CPU {(service.latestMetric?.cpuPercent ?? 0).toFixed(1)}% • Memory {(service.latestMetric?.memoryPercent ?? 0).toFixed(1)}%
+                    CPU {(service.latestMetric?.cpuPercent ?? 0).toFixed(1)}% | Memory {(service.latestMetric?.memoryPercent ?? 0).toFixed(1)}%
                   </p>
                 </div>
                 <StatusBadge status={service.state} />

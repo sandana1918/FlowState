@@ -10,6 +10,7 @@ import type {
 import type { AnomalyRecord } from '../types/metric.types.js';
 import type { CorrelationResult } from './correlation.service.js';
 import { socketHandler } from '../socket/socketHandler.js';
+import { incidentsOpenedTotal } from '../monitoring/prometheus.js';
 
 const severityFromZScore = (zscore: number): IncidentSeverity => {
   if (zscore >= 4) {
@@ -85,6 +86,10 @@ export class IncidentService {
     );
 
     const incident = this.mapIncident(result.rows[0], correlation.deployment ?? null);
+    incidentsOpenedTotal.inc({
+      severity: incident.severity,
+      affected_service: incident.affectedService
+    });
     socketHandler.emitIncidentOpened(incident);
     return incident;
   }
@@ -196,4 +201,3 @@ export class IncidentService {
 }
 
 export const incidentService = new IncidentService();
-

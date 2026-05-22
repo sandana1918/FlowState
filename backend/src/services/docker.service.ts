@@ -85,6 +85,20 @@ const parseContainer = (container: ContainerInfo): ContainerSummary => {
 };
 
 export class DockerService {
+  async getVersion() {
+    try {
+      const version = await docker.version();
+      return {
+        version: String(version.Version ?? 'unknown'),
+        apiVersion: String(version.ApiVersion ?? 'unknown'),
+        os: String(version.Os ?? 'unknown'),
+        arch: String(version.Arch ?? 'unknown')
+      };
+    } catch {
+      return null;
+    }
+  }
+
   async isAvailable() {
     try {
       await docker.ping();

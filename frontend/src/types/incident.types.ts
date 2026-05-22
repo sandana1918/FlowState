@@ -39,10 +39,13 @@ export interface CorrelationRow {
   anomalyContainerName: string;
   anomalyMetric: string;
   zscore: number;
+  incidentOpenedAt?: string;
   deploymentId?: string;
+  deploymentRepo?: string;
+  deploymentBranch?: string;
   deploymentCommit?: string;
   deploymentAuthor?: string;
+  deploymentReceivedAt?: string;
   confidence: 'HIGH' | 'MEDIUM' | 'LOW' | 'NONE';
   timeDeltaMinutes?: number;
 }
-

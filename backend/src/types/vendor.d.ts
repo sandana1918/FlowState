@@ -18,6 +18,7 @@ declare module 'dockerode' {
   class Dockerode {
     constructor(options?: { socketPath?: string });
     ping(): Promise<void>;
+    version(): Promise<Record<string, unknown>>;
     listContainers(options?: { all?: boolean }): Promise<ContainerInfo[]>;
     getContainer(id: string): {
       inspect(): Promise<any>;
@@ -37,4 +38,3 @@ declare module 'dockerode' {
 
   export default Dockerode;
 }
-

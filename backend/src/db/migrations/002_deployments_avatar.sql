@@ -1,0 +1,3 @@
+ALTER TABLE deployments
+ADD COLUMN IF NOT EXISTS avatar_url TEXT;
+

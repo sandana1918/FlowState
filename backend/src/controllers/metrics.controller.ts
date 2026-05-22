@@ -21,6 +21,16 @@ export const getMetricHistory = async (request: Request, response: Response) => 
   });
 };
 
+export const getDashboardHistory = async (request: Request, response: Response) => {
+  const minutes = Number(request.query.minutes ?? 30);
+  const data = await metricsService.getDashboardHistory(minutes);
+  response.json({
+    mode: 'real',
+    data,
+    timestamp: new Date().toISOString()
+  });
+};
+
 export const getMetricAnomalies = async (request: Request, response: Response) => {
   const id = Array.isArray(request.params.id) ? request.params.id[0] : request.params.id;
   const data = await metricsService.getAnomaliesForContainer(id);

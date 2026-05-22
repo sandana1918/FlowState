@@ -15,6 +15,7 @@ export const listDeployments = async (_request: Request, response: Response) => 
       commitMessage: row.commit_message,
       author: row.author,
       authorEmail: row.author_email,
+      avatarUrl: row.avatar_url ?? undefined,
       pushedAt: new Date(row.pushed_at).toISOString(),
       receivedAt: new Date(row.received_at).toISOString()
     })),
@@ -37,10 +38,10 @@ export const getDeployment = async (request: Request, response: Response) => {
             commitMessage: result.rows[0].commit_message,
             author: result.rows[0].author,
             authorEmail: result.rows[0].author_email,
+            avatarUrl: result.rows[0].avatar_url ?? undefined,
             pushedAt: new Date(result.rows[0].pushed_at).toISOString(),
             receivedAt: new Date(result.rows[0].received_at).toISOString()
           },
     timestamp: new Date().toISOString()
   });
 };
-

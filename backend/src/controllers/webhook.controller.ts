@@ -1,10 +1,12 @@
 import type { Request, Response } from 'express';
 import { webhookService } from '../services/webhook.service.js';
+import { webhookSignatureFailuresTotal } from '../monitoring/prometheus.js';
 
 export const handleGithubWebhook = async (request: Request, response: Response) => {
   const signature = request.header('x-hub-signature-256');
   const rawBody = Buffer.isBuffer(request.body) ? request.body : Buffer.from(JSON.stringify(request.body));
   if (!webhookService.verifySignature(signature, rawBody)) {
+    webhookSignatureFailuresTotal.inc();
     response.status(401).json({
       mode: 'fallback',
       warning: 'Invalid webhook signature',
@@ -22,4 +24,3 @@ export const handleGithubWebhook = async (request: Request, response: Response) 
     timestamp: new Date().toISOString()
   });
 };
-

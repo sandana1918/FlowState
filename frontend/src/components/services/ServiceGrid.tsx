@@ -8,4 +8,3 @@ export const ServiceGrid = ({ services }: { services: Service[] }) => (
     ))}
   </div>
 );
-

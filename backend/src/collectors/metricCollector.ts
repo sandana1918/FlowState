@@ -6,12 +6,19 @@ import { socketHandler } from '../socket/socketHandler.js';
 import { env } from '../config/env.js';
 import { logger } from '../utils/logger.js';
 import type { MetricRecord } from '../types/metric.types.js';
+import {
+  metricCollectionCyclesTotal,
+  metricCollectionDurationMs,
+  metricCollectionFailuresTotal,
+  setMetricSnapshotGauges
+} from '../monitoring/prometheus.js';
 
 const buildSchedule = (intervalSeconds: number) => `*/${Math.max(intervalSeconds, 1)} * * * * *`;
 
 export class MetricCollector {
   start() {
     cron.schedule(buildSchedule(env.METRIC_COLLECTION_INTERVAL), async () => {
+      const timer = metricCollectionDurationMs.startTimer();
       try {
         const containersResult = await dockerService.listContainers();
         const metrics: MetricRecord[] = [];
@@ -31,6 +38,7 @@ export class MetricCollector {
             };
             await metricsService.storeMetric(simulatedMetric);
             await anomalyService.observeMetric(simulatedMetric);
+            setMetricSnapshotGauges(simulatedMetric);
             metrics.push(simulatedMetric);
             continue;
           }
@@ -49,16 +57,20 @@ export class MetricCollector {
           };
           await metricsService.storeMetric(metric);
           await anomalyService.observeMetric(metric);
+          setMetricSnapshotGauges(metric);
           metrics.push(metric);
         }
 
+        metricCollectionCyclesTotal.inc();
         socketHandler.emitMetricsUpdate(metrics, containersResult.mode, containersResult.warning);
       } catch (error) {
+        metricCollectionFailuresTotal.inc();
         logger.error('Metric collection cycle failed', { error: (error as Error).message });
+      } finally {
+        timer();
       }
     });
   }
 }
 
 export const metricCollector = new MetricCollector();
-

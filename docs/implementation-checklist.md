@@ -28,6 +28,7 @@
 - [x] `GET /api/health`
 - [x] `GET /api/services`
 - [x] `GET /api/metrics/current`
+- [x] `GET /api/metrics/overview`
 - [x] `GET /api/incidents`
 - [x] `GET /api/deployments`
 - [x] `GET /api/correlations`
@@ -59,19 +60,17 @@
 
 ## Partial
 
-- [~] Dashboard now cleaner and lighter, but the whole app is not yet consistently Google-clean on every page
-- [~] Dashboard system chart uses current metric snapshots by service, not a full 30-minute historical multi-line view
-- [~] Services page lacks the requested `View Logs` and `View Metrics` actions plus richer uptime/details
-- [~] Logs page lacks copy-all, clear, and auto-scroll controls
-- [~] Metrics page is missing dedicated network and restart-count charts
-- [~] Deployments page is missing correlation status badges and avatar rendering
-- [~] Correlations page does not yet use a true time-axis scatter with deployment-aligned vertical markers
-- [~] Settings page shows status and graph editing, but does not yet show Docker version details
-- [~] Prometheus endpoint exists, but custom business metrics are not yet exported beyond default Node metrics
+- [~] Dashboard now cleaner and lighter, but some non-dashboard pages still need one more polish pass to match it perfectly
+
+## Verified Additions
+
+- [x] Dashboard historical 30-minute multi-service metrics view wired to backend history API
+- [x] Custom Prometheus business metrics exported for collection cycles, anomalies, incidents, deployments, and live container gauges
 
 ## Not Verified End-To-End Yet
 
 - [ ] Real GitHub webhook push event received from GitHub
+- [ ] Stable public tunnel verified from this machine for GitHub webhook delivery
 - [ ] Real deployment-to-anomaly incident correlation demonstrated live
 - [ ] Full Docker Compose app stack (`frontend` + `backend` containers) verified with `up --build`
 - [ ] Kubernetes deployment verified on Kind
