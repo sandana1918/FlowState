@@ -41,14 +41,14 @@ export const LogStream = ({
   }, [autoScroll, filteredLogs]);
 
   return (
-    <div ref={streamRef} className="max-h-[640px] overflow-auto rounded-2xl border border-slate-200 bg-[#0f1115] p-4 font-mono text-[13px]">
+    <div ref={streamRef} className="max-h-[640px] overflow-auto rounded-[28px] border border-slate-200 bg-[#0a0d12] p-4 font-mono text-[13px] shadow-[0_18px_40px_rgba(15,23,42,0.12)]">
       {filteredLogs.map((log, index) => (
         <div
           key={`${log.raw}-${index}`}
-          className={`mb-1 rounded px-2 py-1 ${log.level === 'ERROR' ? 'bg-critical/10' : log.level === 'WARN' ? 'bg-warning/10' : ''}`}
+          className={`mb-1 rounded-xl px-3 py-2 ${log.level === 'ERROR' ? 'bg-critical/10' : log.level === 'WARN' ? 'bg-warning/10' : 'bg-white/[0.02]'}`}
         >
-          <span className="mr-2 text-slate-500">{log.timestamp ?? '--'}</span>
-          <span className={`mr-2 ${log.level === 'ERROR' ? 'text-critical' : log.level === 'WARN' ? 'text-warning' : 'text-primary'}`}>
+          <span className="mr-3 text-slate-500">{log.timestamp ?? '--'}</span>
+          <span className={`mr-3 inline-block min-w-[46px] ${log.level === 'ERROR' ? 'text-critical' : log.level === 'WARN' ? 'text-warning' : 'text-primary'}`}>
             {log.level}
           </span>
           <span className="text-slate-100">{highlight(log.message, query)}</span>

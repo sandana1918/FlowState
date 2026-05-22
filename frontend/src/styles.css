@@ -6,13 +6,33 @@
   color-scheme: light;
 }
 
+html {
+  background: #f4f7fb;
+}
+
 body {
   margin: 0;
-  background: #f5f7fb;
+  background:
+    radial-gradient(circle at top left, rgba(26, 115, 232, 0.08), transparent 28%),
+    radial-gradient(circle at top right, rgba(95, 134, 242, 0.08), transparent 24%),
+    linear-gradient(180deg, #f8fafd 0%, #f4f7fb 45%, #eef3fa 100%);
   color: #202124;
   font-family: Inter, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.11) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.11) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(circle at center, black 18%, transparent 82%);
+  opacity: 0.35;
+  pointer-events: none;
 }
 
 * {
@@ -24,4 +44,8 @@ input,
 select,
 textarea {
   font: inherit;
+}
+
+#root {
+  isolation: isolate;
 }

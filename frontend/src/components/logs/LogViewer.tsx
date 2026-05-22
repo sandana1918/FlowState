@@ -14,14 +14,14 @@ export const LogViewer = ({ logs }: { logs: LogLine[] }) => {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap items-center gap-3 rounded-[24px] border border-slate-200/80 bg-white/88 p-4 shadow-glass ring-1 ring-white/75">
         <input
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Search logs"
-          className="min-w-[260px] flex-1 rounded-2xl border border-slate-200 bg-surface px-4 py-3 text-text outline-none"
+          className="min-w-[260px] flex-1 rounded-full border border-slate-200 bg-white px-4 py-3 text-text outline-none transition focus:border-primary"
         />
-        <label className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-surface px-4 py-3 text-sm text-text">
+        <label className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-3 text-sm text-text">
           <input
             type="checkbox"
             checked={autoScroll}
@@ -29,13 +29,13 @@ export const LogViewer = ({ logs }: { logs: LogLine[] }) => {
           />
           Auto-scroll
         </label>
-        <button onClick={() => setCleared(false)} className="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-medium text-text">
+        <button onClick={() => setCleared(false)} className="rounded-full border border-slate-200 px-4 py-3 text-sm font-medium text-text transition hover:border-slate-300 hover:bg-slate-50">
           Refresh
         </button>
-        <button onClick={copyAll} className="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-medium text-text">
+        <button onClick={copyAll} className="rounded-full border border-slate-200 px-4 py-3 text-sm font-medium text-text transition hover:border-slate-300 hover:bg-slate-50">
           Copy all
         </button>
-        <button onClick={() => setCleared(true)} className="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-medium text-text">
+        <button onClick={() => setCleared(true)} className="rounded-full border border-slate-200 px-4 py-3 text-sm font-medium text-text transition hover:border-slate-300 hover:bg-slate-50">
           Clear
         </button>
       </div>

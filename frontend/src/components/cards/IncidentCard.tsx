@@ -12,24 +12,40 @@ export const IncidentCard = ({
   onClick?: () => void;
 }) => (
   <GlassCard className={incident.severity === 'critical' ? 'shadow-critical' : ''}>
-    <div className="flex flex-wrap items-start justify-between gap-3">
-      <div className="space-y-2">
-        <div className="flex items-center gap-2">
+    <div className="flex flex-wrap items-start justify-between gap-5">
+      <div className="space-y-3">
+        <div className="flex flex-wrap items-center gap-2">
           <SeverityBadge severity={incident.severity} />
           <StatusBadge status={incident.status} />
-          <span className="rounded-full border border-secondary/30 bg-secondary/10 px-2 py-1 text-xs text-secondary">
+          <span className="rounded-full border border-secondary/20 bg-secondary/[0.08] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-secondary">
             {incident.correlationConfidence}
           </span>
         </div>
-        <h3 className="text-lg font-semibold text-text">{incident.title}</h3>
-        <p className="text-sm text-muted">
-          {incident.affectedService} • {formatAgo(incident.openedAt)}
-        </p>
+        <div>
+          <h3 className="text-[19px] font-semibold tracking-[-0.02em] text-text">{incident.title}</h3>
+          <p className="mt-1 text-sm text-muted">
+            {incident.affectedService} | {formatAgo(incident.openedAt)}
+          </p>
+        </div>
+        <div className="grid gap-3 text-sm text-muted md:grid-cols-3">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-dim">Metric</p>
+            <p className="mt-1 text-text">{incident.triggerMetric ?? 'n/a'}</p>
+          </div>
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-dim">Z-Score</p>
+            <p className="mt-1 font-mono text-text">{incident.triggerZscore?.toFixed(2) ?? '--'}</p>
+          </div>
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-dim">Deployment</p>
+            <p className="mt-1 text-text">{incident.correlatedDeployment?.author ?? 'No linked deploy'}</p>
+          </div>
+        </div>
       </div>
       {onClick ? (
         <button
           onClick={onClick}
-          className="rounded-full border border-primary/30 bg-primary/10 px-4 py-2 text-sm text-primary"
+          className="rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-medium text-text transition hover:border-slate-300 hover:bg-white"
         >
           Investigate
         </button>
@@ -37,4 +53,3 @@ export const IncidentCard = ({
     </div>
   </GlassCard>
 );
-

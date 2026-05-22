@@ -14,14 +14,19 @@ export const DeploymentTimeline = ({ deployments }: { deployments: Deployment[] 
     <div className="h-64">
       <ResponsiveContainer>
         <BarChart data={byHour}>
-          <CartesianGrid stroke="rgba(148,163,184,.08)" vertical={false} />
-          <XAxis dataKey="hour" stroke="#94A3B8" />
-          <YAxis stroke="#94A3B8" />
-          <Tooltip />
-          <Bar dataKey="count" fill="#818CF8" radius={[8, 8, 0, 0]} />
+          <CartesianGrid stroke="rgba(148,163,184,.14)" vertical={false} />
+          <XAxis dataKey="hour" stroke="#80868b" tickLine={false} axisLine={false} />
+          <YAxis stroke="#80868b" tickLine={false} axisLine={false} />
+          <Tooltip
+            contentStyle={{
+              borderRadius: 18,
+              border: '1px solid rgba(226,232,240,.9)',
+              boxShadow: '0 18px 48px rgba(15,23,42,.08)'
+            }}
+          />
+          <Bar dataKey="count" fill="#1a73e8" radius={[10, 10, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>
   );
 };
-

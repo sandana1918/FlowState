@@ -4,6 +4,8 @@ import { useServices } from '../hooks/useServices';
 import { useLogs } from '../hooks/useLogs';
 import { GlassCard } from '../components/cards/GlassCard';
 import { useSearchParams } from 'react-router-dom';
+import { PageHeader } from '../components/common/PageHeader';
+import { OverviewStat } from '../components/common/OverviewStat';
 
 export const Logs = () => {
   const { services } = useServices();
@@ -19,34 +21,46 @@ export const Logs = () => {
   }, [containerId, presetService, services]);
 
   const targetId = useMemo(() => containerId ?? services[0]?.id, [containerId, services]);
+  const selectedService = services.find((service) => service.id === targetId);
   const { logs } = useLogs(targetId, tail);
 
   return (
     <div className="space-y-6">
+      <PageHeader
+        eyebrow="Operator Console"
+        title="Logs"
+        description="A stripped-back terminal surface focused on fast scanning, not decoration. Pick a container, tighten the tail, and read the story."
+      >
+        <OverviewStat label="Services" value={services.length} hint="Containers available for live log review." />
+        <OverviewStat label="Selected" value={selectedService?.name ?? '--'} hint="Current log source." tone="primary" />
+        <OverviewStat label="Tail" value={tail} hint="Lines requested from the backend." />
+        <OverviewStat label="Visible" value={logs.length} hint="Parsed log lines in memory." />
+      </PageHeader>
+
       <GlassCard className="space-y-4">
         <div>
-          <h2 className="text-2xl font-semibold text-text">Logs</h2>
-          <p className="mt-2 text-sm text-muted">Terminal view over real Docker logs with filtering and clipboard actions.</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-dim">Source</p>
+          <h2 className="mt-2 text-[22px] font-semibold tracking-[-0.03em] text-text">Log stream controls</h2>
         </div>
         <div className="flex flex-wrap gap-4">
-        <select
-          value={targetId}
-          onChange={(event) => setContainerId(event.target.value)}
-          className="rounded-2xl border border-slate-200 bg-surface px-4 py-3 text-text"
-        >
-          {services.map((service) => (
-            <option key={service.id} value={service.id}>{service.name}</option>
-          ))}
-        </select>
-        <select
-          value={tail}
-          onChange={(event) => setTail(Number(event.target.value))}
-          className="rounded-2xl border border-slate-200 bg-surface px-4 py-3 text-text"
-        >
-          {[50, 100, 200, 500].map((value) => (
-            <option key={value} value={value}>{value}</option>
-          ))}
-        </select>
+          <select
+            value={targetId}
+            onChange={(event) => setContainerId(event.target.value)}
+            className="rounded-full border border-slate-200 bg-white px-4 py-3 text-text outline-none"
+          >
+            {services.map((service) => (
+              <option key={service.id} value={service.id}>{service.name}</option>
+            ))}
+          </select>
+          <select
+            value={tail}
+            onChange={(event) => setTail(Number(event.target.value))}
+            className="rounded-full border border-slate-200 bg-white px-4 py-3 text-text outline-none"
+          >
+            {[50, 100, 200, 500].map((value) => (
+              <option key={value} value={value}>{value}</option>
+            ))}
+          </select>
         </div>
       </GlassCard>
       <LogViewer logs={logs} />
