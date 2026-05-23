@@ -49,9 +49,39 @@ app.use(errorMiddleware);
 const server = http.createServer(app);
 socketHandler.initialize(server);
 
+const wait = (ms: number) =>
+  new Promise<void>((resolve) => {
+    setTimeout(resolve, ms);
+  });
+
+const retry = async <T>(label: string, task: () => Promise<T>, attempts = 10, delayMs = 3_000) => {
+  let lastError: Error | undefined;
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      return await task();
+    } catch (error) {
+      lastError = error as Error;
+      logger.warn(`${label} failed`, {
+        attempt,
+        attempts,
+        error: lastError.message
+      });
+      if (attempt < attempts) {
+        await wait(delayMs);
+      }
+    }
+  }
+  throw lastError ?? new Error(`${label} failed`);
+};
+
 const bootstrap = async () => {
   try {
-    await Promise.all([connectRedis().catch(() => undefined), checkDbConnection()]);
+    await retry('Redis connect', async () => {
+      await connectRedis();
+    });
+    await retry('Database connect', async () => {
+      await checkDbConnection();
+    });
     socketHandler.emitConnectionStatus({
       dockerConnected: await dockerService.isAvailable(),
       dbConnected: true,

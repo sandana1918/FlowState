@@ -14,7 +14,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 
-FROM gcr.io/distroless/nodejs20-debian12:nonroot
+FROM cgr.dev/chainguard/node:latest
 WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=prod-deps /app/node_modules ./node_modules

@@ -1,0 +1,10 @@
+node_modules
+dist
+coverage
+*.log
+*.err.log
+.env
+.env.local
+npm-debug.log
+Dockerfile*
+.git

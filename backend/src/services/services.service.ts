@@ -1,6 +1,7 @@
 import { dockerService } from './docker.service.js';
 import { metricsService } from './metrics.service.js';
 import type { ContainerSummary } from '../types/docker.types.js';
+import { logger } from '../utils/logger.js';
 
 export class ServicesService {
   private buildMetricFallbackServices() {
@@ -28,7 +29,10 @@ export class ServicesService {
   }
 
   async listServices() {
-    const currentMetrics = await metricsService.getCurrentMetrics();
+    const currentMetrics = await metricsService.getCurrentMetrics().catch((error: Error) => {
+      logger.warn('Failed to load current metrics for service listing', { error: error.message });
+      return [];
+    });
     const metricsMap = new Map(currentMetrics.map((metric) => [metric.containerId, metric]));
     const containersResult = await dockerService.listContainers();
 
